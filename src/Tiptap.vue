@@ -1,5 +1,5 @@
 <template>
-	<div class="editor-container">
+	<div class="editor-container fh fw">
 		<BubbleMenu
 		v-if="editor"
 		:editor="editor"
@@ -85,32 +85,36 @@
 		</button>
 		</BubbleMenu>
 
-		<EditorContent :editor="editor" class="editor" />
-
-		<div class="word-count">
-			{{ editor.storage.characterCount.words() }}
+		<div class="content-container fh">
+			<scroller
+			padding="0"
+			class="fh fw"
+			>
+				<EditorContent :editor="editor" class="editor fh" />
+			</scroller>
 		</div>
 	</div>
 </template>
 
 <script setup>
+import exampleContent from './assets/example-content.json';
 import { BubbleMenu, Editor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import CharacterCount from '@tiptap/extension-character-count';
 import Typography from '@tiptap/extension-typography';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import exampleContent from './assets/example-content.json';
 import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import Image from '@tiptap/extension-image';
+import Scroller from './Scroller.vue';
 
 let startContent = JSON.parse(JSON.stringify(exampleContent))
 
 const editor = new Editor({
-	// content: startContent,
+	content: startContent,
 	editable: true,
 	injectCSS: false,
 	extensions: [
@@ -121,12 +125,7 @@ const editor = new Editor({
 				levels: [1, 2, 3],
 			},
 		}),
-		Typography.configure({
-			openDoubleQuote: true,
-			closeDoubleQuote: true,
-			openSingleQuote: true,
-			closeSingleQuote: true,
-		}),
+		Typography.configure({}),
 		TextAlign.configure({
 			types: ['heading', 'paragraph', 'blockquote'],
 		}),
@@ -166,14 +165,18 @@ function getJSON() {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 12px;
+	box-sizing: border-box;
 }
 
 .editor,
 .tiptap {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
 	width: 100%;
-	min-width: 300px;
-	min-height: 100px;
-	overflow: auto;
+	margin: 0 auto;
 }
 
 .tiptap {
@@ -198,6 +201,13 @@ button.is-active {
 
 .dl-btn {
 	margin-top: 10px;
+}
+
+.content-container {
+	position: relative;
+	width: 50%;
+	border-radius: 8px;
+	transition: border-color 250ms;
 }
 
 .tiptap {

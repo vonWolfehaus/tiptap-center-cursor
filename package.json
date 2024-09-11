@@ -1,5 +1,5 @@
 {
-  "name": "tiptap-docx-export",
+  "name": "tiptap-center-cursor",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -25,10 +25,8 @@
     "@tiptap/pm": "^2.5.8",
     "@tiptap/starter-kit": "^2.5.8",
     "@tiptap/vue-3": "^2.5.8",
-    "docx": "^8.2.2",
     "file-saver": "^2.0.5",
     "naive-ui": "^2.38.1",
-    "pinia": "^2.1.7",
     "vue": "^3.4.31"
   },
   "devDependencies": {
