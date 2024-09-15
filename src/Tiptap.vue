@@ -1,5 +1,5 @@
 <template>
-	<div class="editor-container fh fw">
+	<div class="center tiptap fh">
 		<BubbleMenu
 		v-if="editor"
 		:editor="editor"
@@ -86,10 +86,7 @@
 		</BubbleMenu>
 
 		<div class="content-container fh">
-			<scroller
-			padding="0"
-			class="fh fw"
-			>
+			<scroller padding="0" class="fh fw" style="padding: 0px 32px">
 				<EditorContent :editor="editor" class="editor fh" />
 			</scroller>
 		</div>
@@ -181,10 +178,15 @@ function getJSON() {
 
 .tiptap {
 	box-sizing: border-box;
-	border: 2px solid gray;
 	border-radius: 4px;
 	padding: 4px;
-	width: 98%
+}
+
+.ProseMirror {
+	flex: 1;
+	min-height: 100px;
+	line-height: 1.4;
+	padding: 18px 0;
 }
 
 .ProseMirror p {
@@ -206,6 +208,7 @@ button.is-active {
 .content-container {
 	position: relative;
 	width: 50%;
+	border: 2px solid gray;
 	border-radius: 8px;
 	transition: border-color 250ms;
 }
@@ -275,4 +278,10 @@ button.is-active {
 	cursor: ew-resize;
 	cursor: col-resize;
 }
+</style>
+
+<style lang="sass" scoped>
+.center
+	display: flex
+	align-items: center
 </style>
