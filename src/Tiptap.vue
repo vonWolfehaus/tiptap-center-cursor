@@ -86,7 +86,7 @@
 		</BubbleMenu>
 
 		<div class="content-container fh">
-			<scroller padding="0" class="fh fw" style="padding: 0px 32px">
+			<scroller ref="scroller" padding="0" class="fh fw" style="padding: 0px 32px">
 				<EditorContent :editor="editor" class="editor fh" />
 			</scroller>
 		</div>
@@ -96,6 +96,7 @@
 <script setup>
 import exampleContent from './assets/example-content.json';
 import { BubbleMenu, Editor, EditorContent } from '@tiptap/vue-3';
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import StarterKit from '@tiptap/starter-kit';
 import CharacterCount from '@tiptap/extension-character-count';
 import Typography from '@tiptap/extension-typography';
@@ -141,6 +142,75 @@ const editor = new Editor({
 function getJSON() {
 	console.log(JSON.stringify(editor.getJSON()));
 }
+
+const scroller = ref(null)
+let holdingArrowKey = false
+let intervalId = null
+
+onMounted(() => {
+	editor.on('update', ({ transaction }) => {
+		if (!holdingArrowKey && transaction.docChanged) {
+      		centerCursor(true)
+    	}
+  	})
+  	document.addEventListener('keydown', handleKeyDown)
+  	document.addEventListener('keyup', handleKeyUp)
+  	function handleKeyDown(event) {
+    	if (
+      		['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)
+    	) {
+      		if (!holdingArrowKey) {
+        		holdingArrowKey = true
+        		intervalId = setInterval(() => {
+        			centerCursor(false)
+        		}, 50)
+      		}
+    	}
+  	}
+  	function handleKeyUp(event) {
+    	if (
+      		['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)
+    	) {
+      	holdingArrowKey = false
+      	if (intervalId) {
+        	clearInterval(intervalId)
+        	intervalId = null
+      	}
+    }
+  }
+  function centerCursor(smooth = false) {
+    	const editorElement = document.querySelector('.ProseMirror')
+    	if (!editorElement) {
+      		console.log('Editor element not found. Skipping center cursor.')
+      		return
+    	}
+    	const cursorPos = editor.view.state.selection.$anchor.pos
+    	const cursorCoords = editor.view.coordsAtPos(cursorPos)
+    	const scrollerElement = scroller.value?.$el
+    	if (!scrollerElement) {
+      		console.log('Scroller element not found.')
+      		return
+    	}
+    	const scrollerRect = scrollerElement.getBoundingClientRect()
+    	const scrollOffset =
+      	cursorCoords.top - scrollerRect.top - scrollerRect.height / 2
+    	if (Math.abs(scrollOffset) > 10) {
+      		scrollerElement.scrollBy({
+        		top: scrollOffset,
+        		behavior: smooth ? 'smooth' : 'auto',
+      		})
+    	}
+  	}
+  	onBeforeUnmount(() => {
+    	document.removeEventListener('keydown', handleKeyDown)
+    	document.removeEventListener('keyup', handleKeyUp)
+    	if (intervalId) {
+      		clearInterval(intervalId)
+    	}
+  })
+  centerCursor()
+})
+
 </script>
 
 <style lang="scss">

@@ -1,9 +1,12 @@
 <template>
-	<div ref="elScroller" class="scroller">
-		<div class="scroll-content fh" :class="contentStyle">
-			<slot />
-		</div>
-	</div>
+  <div ref="elScroller" class="scroller">
+    <div class="scroll-content-wrapper">
+      <div class="scroll-content" :class="contentStyle">
+        <slot/>
+      </div>
+      <div class="permanent-padding"></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -113,4 +116,12 @@ export default {
 
 .scroll-content
 	width: calc(100% + v-bind(sw))
+</style>
+
+<style>
+.permanent-padding {
+  height: 256px; /* Can be adjustable */
+  width: 100%;
+  background: transparent;
+}
 </style>
