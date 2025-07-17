@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import exampleContent from './assets/example-content.json';
+import exampleContent from './assets/example-content-original.json';
 import { BubbleMenu, Editor, EditorContent } from '@tiptap/vue-3';
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import StarterKit from '@tiptap/starter-kit';
