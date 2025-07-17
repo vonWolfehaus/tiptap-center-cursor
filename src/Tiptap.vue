@@ -90,6 +90,10 @@
 				<EditorContent :editor="editor" class="editor fh" />
 			</scroller>
 		</div>
+
+		<div>
+			Selected Wordcount: {{ wordCount }}
+		</div>
 	</div>
 </template>
 
@@ -107,9 +111,12 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import Image from '@tiptap/extension-image';
-import Scroller from './Scroller.vue';
+import Scroller from './Scroller.vue'
+import GetSelectedText from './getSelectedText'
 
 let startContent = JSON.parse(JSON.stringify(exampleContent))
+
+const wordCount = ref(0)
 
 const editor = new Editor({
 	content: startContent,
@@ -118,6 +125,7 @@ const editor = new Editor({
 	extensions: [
 		Underline,
 		CharacterCount,
+		GetSelectedText,
 		StarterKit.configure({
 			heading: {
 				levels: [1, 2, 3],
@@ -137,7 +145,16 @@ const editor = new Editor({
 			allowBase64: true,
 		}),
 	],
+	onSelectionUpdate: onSelection,
 })
+
+function onSelection({ transaction }) {
+	const selection = transaction.curSelection
+	const range = selection.ranges[0]
+	const txt = editor.commands.getSelectedText()
+	if (txt && txt != '') wordCount.value = txt.split(' ').filter((n) => n != '').length
+	else wordCount.value = 0
+}
 
 function getJSON() {
 	console.log(JSON.stringify(editor.getJSON()));
