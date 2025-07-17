@@ -113,6 +113,7 @@ import TableRow from '@tiptap/extension-table-row';
 import Image from '@tiptap/extension-image';
 import Scroller from './Scroller.vue'
 import GetSelectedText from './getSelectedText'
+import SearchAndReplace from './searchAndReplace'
 
 let startContent = JSON.parse(JSON.stringify(exampleContent))
 
@@ -130,6 +131,9 @@ const editor = new Editor({
 			heading: {
 				levels: [1, 2, 3],
 			},
+		}),
+		SearchAndReplace.configure({
+			disableRegex: true
 		}),
 		Typography.configure({}),
 		TextAlign.configure({
