@@ -92,7 +92,7 @@
 		</div>
 
 		<div>
-			Selected Wordcount: {{ wordCount }}
+			Selected word count: {{ wordCount }}
 		</div>
 	</div>
 </template>
