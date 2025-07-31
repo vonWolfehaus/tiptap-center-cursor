@@ -3,7 +3,6 @@
 		<BubbleMenu
 		v-if="editor"
 		:editor="editor"
-		:tippy-options="{ duration: 100 }"
 		>
 		<button
 			@click="editor.chain().focus().setTextAlign('left').run()"
@@ -91,22 +90,24 @@
 			</scroller>
 		</div>
 
-		<div>
-			Selected word count: {{ wordCount }}
+		<div class="flex">
+			<!-- <div><button @click="getJSON">Get json</button></div> -->
+			<div>word count: {{ wordCount }}</div>
 		</div>
 	</div>
 </template>
 
 <script setup>
-import exampleContent from './assets/example-content-original.json';
-import { BubbleMenu, Editor, EditorContent } from '@tiptap/vue-3';
+import exampleContent from './assets/exmpale-content-wordcount.json';
+import { Editor, EditorContent } from '@tiptap/vue-3';
+import { BubbleMenu } from '@tiptap/vue-3/menus'
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import { countWords } from 'alfaaz'
 import StarterKit from '@tiptap/starter-kit';
 import CharacterCount from '@tiptap/extension-character-count';
 import Typography from '@tiptap/extension-typography';
 import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-import Table from '@tiptap/extension-table';
+// import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
@@ -122,10 +123,11 @@ const wordCount = ref(0)
 const editor = new Editor({
 	content: startContent,
 	editable: true,
-	injectCSS: false,
+	// injectCSS: false,
 	extensions: [
-		Underline,
-		CharacterCount,
+		CharacterCount.configure({
+			wordCounter: (text) => countWords(text),
+		}),
 		GetSelectedText,
 		StarterKit.configure({
 			heading: {
@@ -139,9 +141,9 @@ const editor = new Editor({
 		TextAlign.configure({
 			types: ['heading', 'paragraph', 'blockquote'],
 		}),
-		Table.configure({
-			resizable: true,
-		}),
+		// Table.configure({
+		// 	resizable: true,
+		// }),
 		TableRow,
 		TableHeader,
 		TableCell,
@@ -150,13 +152,18 @@ const editor = new Editor({
 		}),
 	],
 	onSelectionUpdate: onSelection,
+	onUpdate: onType,
 })
+
+function onType() {
+	wordCount.value = editor.storage.characterCount.words()
+}
 
 function onSelection({ transaction }) {
 	const selection = transaction.curSelection
 	const range = selection.ranges[0]
 	const txt = editor.commands.getSelectedText()
-	if (txt && txt != '') wordCount.value = txt.split(' ').filter((n) => n != '').length
+	if (txt && txt != '') wordCount.value = countWords(txt)
 	else wordCount.value = 0
 }
 
@@ -169,6 +176,7 @@ let holdingArrowKey = false
 let intervalId = null
 
 onMounted(() => {
+	onType()
 	editor.on('update', ({ transaction }) => {
 		if (!holdingArrowKey && transaction.docChanged) {
       		centerCursor(true)
@@ -199,6 +207,7 @@ onMounted(() => {
       	}
     }
   }
+
   function centerCursor(smooth = false) {
     	const editorElement = document.querySelector('.ProseMirror')
     	if (!editorElement) {
@@ -229,7 +238,7 @@ onMounted(() => {
       		clearInterval(intervalId)
     	}
   })
-  centerCursor()
+//   centerCursor()
 })
 
 </script>
@@ -375,4 +384,7 @@ button.is-active {
 .center
 	display: flex
 	align-items: center
+
+.flex
+	display: flex
 </style>
